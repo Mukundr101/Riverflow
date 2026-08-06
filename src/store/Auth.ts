@@ -3,7 +3,7 @@ import { immer } from "zustand/middleware/immer";
 import { persist } from "zustand/middleware";
 
 import {AppwriteException, ID, Models} from "appwrite"
-import { account } from "@/models/client/config";
+import { account, isAppwriteConfigured } from "@/models/client/config";
 
 
 export interface UserPrefs {
@@ -24,7 +24,7 @@ interface IAuthStore {
   ): Promise<
   {
     success: boolean;
-    error?: AppwriteException| null
+    error?: Error | AppwriteException | null
   }>
   createAccount(
     name: string,
@@ -33,7 +33,7 @@ interface IAuthStore {
   ): Promise<
   {
     success: boolean;
-    error?: AppwriteException| null
+    error?: Error | AppwriteException | null
   }>
   logout(): Promise<void>
 }
@@ -62,6 +62,13 @@ export const useAuthStore = create<IAuthStore>()(
       },
 
       async login(email: string, password: string) {
+        if (!isAppwriteConfigured) {
+          return {
+            success: false,
+            error: new Error("Appwrite is not configured. Set NEXT_PUBLIC_APPWRITE_HOST_URL and NEXT_PUBLIC_APPWRITE_PROJECT_ID in Vercel."),
+          };
+        }
+
         try {
           const session = await account.createEmailPasswordSession(email, password)
           const [user, {jwt}] = await Promise.all([
@@ -89,6 +96,13 @@ export const useAuthStore = create<IAuthStore>()(
       },
 
       async createAccount(name:string, email: string, password: string) {
+        if (!isAppwriteConfigured) {
+          return {
+            success: false,
+            error: new Error("Appwrite is not configured. Set NEXT_PUBLIC_APPWRITE_HOST_URL and NEXT_PUBLIC_APPWRITE_PROJECT_ID in Vercel."),
+          };
+        }
+
         try {
           await account.create(ID.unique(), email, password, name)
           return {success: true}

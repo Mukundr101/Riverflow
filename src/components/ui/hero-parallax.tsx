@@ -12,7 +12,7 @@ export const HeroParallax = ({
     products: {
         title: string;
         link: string;
-        thumbnail: string;
+        thumbnail?: string;
     }[];
 }) => {
     const firstRow = products.slice(0, 5);
@@ -77,6 +77,19 @@ export const HeroParallax = ({
     );
 };
 
+const gradientStyles = [
+    "from-fuchsia-600 via-violet-600 to-indigo-600",
+    "from-cyan-500 via-sky-600 to-blue-700",
+    "from-emerald-500 via-teal-600 to-cyan-700",
+    "from-amber-500 via-orange-500 to-rose-600",
+    "from-pink-500 via-rose-500 to-red-600",
+];
+
+const getGradientClass = (title: string) => {
+    const index = title.length % gradientStyles.length;
+    return gradientStyles[index];
+};
+
 export const ProductCard = ({
     product,
     translate,
@@ -84,10 +97,13 @@ export const ProductCard = ({
     product: {
         title: string;
         link: string;
-        thumbnail: string;
+        thumbnail?: string;
     };
     translate: MotionValue<number>;
 }) => {
+    const hasThumbnail = Boolean(product.thumbnail && product.thumbnail.trim());
+    const gradientClass = getGradientClass(product.title);
+
     return (
         <motion.div
             style={{
@@ -99,14 +115,30 @@ export const ProductCard = ({
             key={product.title}
             className="group/product relative h-96 w-[30rem] flex-shrink-0"
         >
-            <Link href={product.link} className="block group-hover/product:shadow-2xl">
-                <Image
-                    src={product.thumbnail}
-                    height="600"
-                    width="600"
-                    className="absolute inset-0 h-full w-full object-cover object-left-top"
-                    alt={product.title}
-                />
+            <Link href={product.link} className="block h-full w-full group-hover/product:shadow-2xl">
+                {hasThumbnail ? (
+                    <Image
+                        src={product.thumbnail!}
+                        height="600"
+                        width="600"
+                        className="absolute inset-0 h-full w-full object-cover object-left-top"
+                        alt={product.title}
+                    />
+                ) : (
+                    <div
+                        className={`absolute inset-0 flex h-full w-full items-end bg-gradient-to-br ${gradientClass} p-6`}
+                    >
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.25),transparent_50%)]" />
+                        <div className="relative z-10">
+                            <p className="text-xs uppercase tracking-[0.35em] text-white/70">
+                                Recent question
+                            </p>
+                            <h2 className="mt-2 max-w-[20rem] text-xl font-semibold text-white">
+                                {product.title}
+                            </h2>
+                        </div>
+                    </div>
+                )}
             </Link>
             <div className="pointer-events-none absolute inset-0 h-full w-full bg-black opacity-0 group-hover/product:opacity-80"></div>
             <h2 className="absolute bottom-4 left-4 text-white opacity-0 group-hover/product:opacity-100">
