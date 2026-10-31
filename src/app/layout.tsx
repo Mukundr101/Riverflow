@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 // @ts-ignore
 import  "./globals.css";
 
@@ -20,7 +21,9 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={cn(inter.className, "dark:bg-black dark:text-white")}>
         <Header />
-        {children}</body>
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }

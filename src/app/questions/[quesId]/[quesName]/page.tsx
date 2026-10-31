@@ -14,7 +14,7 @@ import {
     questionAttachmentBucket,
 } from "@/models/name";
 import { databases, users } from "@/models/server/config";
-import { storage } from "@/models/client/config";
+import env from "@/app/env";
 import { UserPrefs } from "@/store/Auth";
 import convertDateToRelativeTime from "@/utils/relativeTime";
 import slugify from "@/utils/slugify";
@@ -120,6 +120,14 @@ const Page = async ({ params }: { params: { quesId: string; quesName: string } }
         ),
     ]);
 
+    // Get attachment preview URL if exists
+    let attachmentPreviewUrl: string | null = null;
+    if (question.attachmentId) {
+        // Construct preview URL manually since server-side storage returns ArrayBuffer
+        const endpoint = env.appwrite.endpoint.replace('/v1', '');
+        attachmentPreviewUrl = `${endpoint}/storage/buckets/${questionAttachmentBucket}/files/${question.attachmentId}/preview?project=${env.appwrite.projectId}`;
+    }
+
     return (
         <TracingBeam className="container pl-6">
             <Particles
@@ -168,18 +176,15 @@ const Page = async ({ params }: { params: { quesId: string; quesName: string } }
                     </div>
                     <div className="w-full overflow-auto">
                         <MarkdownPreview className="rounded-xl p-4" source={question.content} />
-                        <picture>
-                            <img
-                                src={
-                                    storage.getFilePreview(
-                                        questionAttachmentBucket,
-                                        question.attachmentId
-                                    ).href
-                                }
-                                alt={question.title}
-                                className="mt-3 rounded-lg"
-                            />
-                        </picture>
+                        {attachmentPreviewUrl && (
+                            <picture>
+                                <img
+                                    src={attachmentPreviewUrl}
+                                    alt={question.title}
+                                    className="mt-3 rounded-lg"
+                                />
+                            </picture>
+                        )}
                         <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
                             {question.tags.map((tag: string) => (
                                 <Link

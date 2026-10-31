@@ -5,7 +5,10 @@ export async function safeAppwrite<T>(
     try {
         return await cb();
     } catch (error) {
-        console.warn("Appwrite request failed during build/render:", error);
+        // Only log in development to reduce noise in production
+        if (process.env.NODE_ENV === 'development') {
+            console.warn("Appwrite request failed during build/render:", error);
+        }
         return fallback;
     }
 }

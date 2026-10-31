@@ -87,20 +87,23 @@ const QuestionForm = ({ question }: { question?: Models.Document }) => {
     };
 
     const create = async () => {
-        if (!formData.attachment) throw new Error("Please upload an image");
+        let attachmentId: string | undefined;
 
-        const storageResponse = await storage.createFile(
-            questionAttachmentBucket,
-            ID.unique(),
-            formData.attachment
-        );
+        if (formData.attachment) {
+            const storageResponse = await storage.createFile(
+                questionAttachmentBucket,
+                ID.unique(),
+                formData.attachment
+            );
+            attachmentId = storageResponse.$id;
+        }
 
         const response = await databases.createDocument(db, questionCollection, ID.unique(), {
             title: formData.title,
             content: formData.content,
             authorId: formData.authorId,
             tags: Array.from(formData.tags),
-            attachmentId: storageResponse.$id,
+            attachmentId: attachmentId,
         });
 
         loadConfetti();

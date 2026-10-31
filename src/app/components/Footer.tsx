@@ -10,20 +10,12 @@ const Footer = () => {
             href: "/",
         },
         {
-            title: "About",
-            href: "/about",
-        },
-        {
-            title: "Privacy Policy",
-            href: "/privacy-policy",
-        },
-        {
-            title: "Terms of Service",
-            href: "/terms-of-service",
-        },
-        {
             title: "Questions",
             href: "/questions",
+        },
+        {
+            title: "Ask a Question",
+            href: "/questions/ask",
         },
     ];
     return (
@@ -36,7 +28,7 @@ const Footer = () => {
                         </li>
                     ))}
                 </ul>
-                <div className="mt-4 text-center">&copy; {new Date().getFullYear()} Riverpod</div>
+                <div className="mt-4 text-center">&copy; {new Date().getFullYear()} RiverFlow</div>
             </div>
             <AnimatedGridPattern
                 numSquares={30}

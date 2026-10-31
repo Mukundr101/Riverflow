@@ -50,7 +50,7 @@ const Notification = ({ user }: { user: Models.User<UserPrefs> }) => {
 
 export default async function TopContributers() {
     const topUsers = await safeAppwrite(
-        () => users.list<UserPrefs>([Query.limit(10)]),
+        () => users.list<UserPrefs>([Query.limit(50), Query.orderDesc("prefs.reputation")]),
         { users: [] } as any
     );
 
